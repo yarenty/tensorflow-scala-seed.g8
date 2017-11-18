@@ -1,0 +1,150 @@
+// Apply the java plugin to add support for Java
+apply plugin: 'scala'
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'scalaStyle'
+apply plugin: 'org.scoverage'
+
+// Support local launch of application 
+apply plugin: 'application'
+mainClassName = 'com.yarenty.tensorflow.Main'
+
+// Project specific settings
+// Setup group ID for this project
+group = "com.yarenty.tensorflow"
+
+
+// The build script settings to fetch plugins and put them on classpath
+buildscript {
+    repositories {
+        maven {
+            url "http://repo1.maven.org/maven2/"
+        }
+        jcenter {
+            url "http://jcenter.bintray.com/"
+        }
+        maven {
+            url "http://plugins.gradle.org/m2/"
+        }
+    }
+    
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.3'
+        classpath 'org.github.mansur.scalastyle:gradle-scalastyle-plugin_2.10:0.4.1'
+        classpath "gradle.plugin.org.scoverage:gradle-scoverage:2.1.0"
+    }
+}
+
+// Configure project properties
+ext {
+    scalaBinaryVersion = "2.11"
+    scalaVersion = "2.11.8"
+    junitVersion = '4.12'
+}
+
+// In this section you declare where to find the dependencies of your project
+repositories {
+    //mavenCentral()
+    maven {
+        url "http://repo1.maven.org/maven2/"
+    }
+    // Cloudera dependencies
+    maven {
+        url "http://repository.cloudera.com/artifactory/cloudera-repos/"
+    }
+    // Hortonworks dependencies
+    maven {
+        url "http://repo.hortonworks.com/content/repositories/releases/"
+    }
+    // Public sonatype repository
+    maven {
+        url "http://oss.sonatype.org/content/repositories/releases/"
+    }
+}
+
+// This section declares the dependencies for your production and test code
+dependencies {
+
+    compile 'org.tensorflow:tensorflow:1.4.0'
+    
+    // Scala project needs dependency on Scala library
+    compile "org.scala-lang:scala-library:" + scalaVersion
+
+    // And use scalatest for Scala testing
+    testCompile "org.scalatest:scalatest_" + scalaBinaryVersion + ":2.2.1"
+    testCompile "junit:junit:${junitVersion}"
+
+    //code coverage
+    scoverage "org.scoverage:scalac-scoverage-plugin_${scalaBinaryVersion}:1.3.1", "org.scoverage:scalac-scoverage-runtime_${scalaBinaryVersion}:1.3.1"
+
+}
+
+
+scalaStyle {
+    configLocation = "$rootDir/scalastyle-config.xml"
+    includeTestSourceDirectory = true
+    source = "src/main/scala"
+    testSource = "src/test/scala"
+}
+
+
+// In resulting jar include Scala binary version
+jar {
+    baseName = project.name + scalaBinaryVersion
+    manifest {
+        attributes(
+                "Class-Path": configurations.compile.collect { it.getName() }.join(' ')
+        )
+    }
+}
+
+
+
+task scalatest(dependsOn: compileTestScala) << {
+    ant.taskdef(
+            name: 'scalatest',
+            classname: 'org.scalatest.tools.ScalaTestAntTask',
+            classpath: configurations.testRuntime.asPath + ':' + compileScala.destinationDir
+    )
+    ant.scalatest(
+            runpath: sourceSets.test.output.classesDir,
+            haltonfailure: 'false',
+            fork: 'false'
+    ) {
+        reporter(type: 'stderr')
+    }
+}
+
+test {
+    dependsOn scalatest
+}
+
+
+//to run from gradle cmd line: gradle run -PappArgs="['-arg1']"
+run {
+    if (project.hasProperty("appArgs")) {
+        args Eval.me(appArgs)
+    }
+}
+
+// Support for application assembly
+apply plugin: 'com.github.johnrengelman.shadow'
+
+shadowJar {
+    appendix = 'app'
+    archiveName = "test_tf.${extension}"
+
+    // Dependencies included in resulting jar file
+    dependencies {
+
+        include(dependency("org.tensorflow:libtensorflow"))
+        include(dependency("org.tensorflow:libtensorflow_jni"))
+        include(dependency("org.tensorflow:tensorflow"))
+        
+        //SCALA dependency
+        include(dependency("org.scala-lang:scala-library"))
+        include(dependency("org.scala-lang:scala-reflect"))
+
+
+    }
+}
