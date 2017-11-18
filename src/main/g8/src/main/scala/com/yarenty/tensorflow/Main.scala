@@ -22,11 +22,11 @@ object Main {
 
     if (t != null) t.close()
 
-
     // Execute the "MyConst" operation in a Session.
     val s = new Session(g)
     val output = s.runner.fetch("MyConst").run.get(0)
-    System.out.println(new String(output.bytesValue, "UTF-8"))
+
+    System.out.println(new String(output.bytesValue, "UTF-8")) // scalastyle:ignore
 
 
 
