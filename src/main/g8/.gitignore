@@ -62,3 +62,6 @@ src/main/scala-2.11/
 build/
 /.idea/
 
+/src/testScoverage/
+/src/scoverage/
+/.gradle/
