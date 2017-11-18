@@ -67,14 +67,14 @@ dependencies {
     compile 'org.tensorflow:tensorflow:1.4.0'
 
     // Scala project needs dependency on Scala library
-    compile "org.scala-lang:scala-library:" + scalaVersion
+    compile "org.scala-lang:scala-library:\${scalaVersion}"
 
     // And use scalatest for Scala testing
-    testCompile "org.scalatest:scalatest_" + scalaBinaryVersion + ":2.2.1"
-    testCompile "junit:junit:" + junitVersion
+    testCompile "org.scalatest:scalatest_\${scalaBinaryVersion}:2.2.1"
+    testCompile "junit:junit:\${junitVersion}"
 
     //code coverage
-    scoverage "org.scoverage:scalac-scoverage-plugin_" + scalaBinaryVersion + ":1.3.1", "org.scoverage:scalac-scoverage-runtime_" + scalaBinaryVersion + ":1.3.1"
+    scoverage "org.scoverage:scalac-scoverage-plugin_\${scalaBinaryVersion}:1.3.1", "org.scoverage:scalac-scoverage-runtime_\${scalaBinaryVersion}:1.3.1"
 
 }
 
