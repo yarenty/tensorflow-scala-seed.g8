@@ -74,13 +74,13 @@ dependencies {
     testCompile "junit:junit:" + junitVersion
 
     //code coverage
-    scoverage "org.scoverage:scalac-scoverage-plugin" + scalaBinaryVersion + ":1.3.1", "org.scoverage:scalac-scoverage-runtime" + scalaBinaryVersion + ":1.3.1"
+    scoverage "org.scoverage:scalac-scoverage-plugin_" + scalaBinaryVersion + ":1.3.1", "org.scoverage:scalac-scoverage-runtime_" + scalaBinaryVersion + ":1.3.1"
 
 }
 
 
 scalaStyle {
-    configLocation = rootDir + "/scalastyleconfig.xml"
+    configLocation = "\${rootDir}/scalastyleconfig.xml"
     includeTestSourceDirectory = true
     source = "src/main/scala"
     testSource = "src/test/scala"
