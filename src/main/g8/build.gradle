@@ -80,7 +80,7 @@ dependencies {
 
 
 scalaStyle {
-    configLocation = "$rootDir/scalastyle-config.xml"
+    configLocation = "$rootDir/scalastyleconfig.xml"
     includeTestSourceDirectory = true
     source = "src/main/scala"
     testSource = "src/test/scala"
